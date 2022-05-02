@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import tweepy, time, sys
-import keys as k
+# import keys as k
 from os import environ
 
 argfile = str(sys.argv[1])
