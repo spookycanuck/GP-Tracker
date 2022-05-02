@@ -1,0 +1,2 @@
+worker: python scheduler.py helloworld.txt
+web: python server.py
