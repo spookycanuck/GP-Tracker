@@ -23,9 +23,11 @@ def batch_delete(api):
             try:
                 api.destroy_status(status.id)
                 print("Deleted:", status.id)
+                sys.stdout.flush()
             except Exception:
                 traceback.print_exc()
                 print("Failed to delete:", status.id)
+                sys.stdout.flush()
  
 if __name__ == "__main__":
     # api = oauth_login(ACCESS_TOKEN, ACCESS_SECRET)

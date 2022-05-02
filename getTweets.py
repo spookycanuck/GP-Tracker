@@ -22,9 +22,11 @@ def batch_delete(api):
             try:
                 api.get_status(status.id)
                 print("Tweet ID:", status.id)
+                sys.stdout.flush()
             except Exception:
                 traceback.print_exc()
                 print("Failed to retrieve ID:", status.id)
+                sys.stdout.flush()
  
 if __name__ == "__main__":
     # api = oauth_login(ACCESS_TOKEN, ACCESS_SECRET)
