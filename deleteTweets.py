@@ -3,12 +3,12 @@
 # https://pythonmarketer.com/2020/09/13/delete-all-your-tweets-with-tweepy-and-the-twitter-api/
 
 import tweepy, time, sys
-import keys
+import keys as k
 
-API_KEY = 'mQRr78uv4MTg1dcfyqGfwLWDs'
-API_SECRET = 'bVslhqgkaFbz8NSHI1r79IzGo4zfv0l6lKoYLgRPtntyYhkWVL'
-ACCESS_TOKEN = '1520844041218412545-L0rHRXdePIk5PME4h9RyYMXLRoIpOI'
-ACCESS_SECRET = 'N9pZJOCC0qUia5egUFfkRZ9wchs3A5W7bY7VW80GlIZEL'
+API_KEY = k.apiKey
+API_SECRET = k.apiSecret
+ACCESS_TOKEN = k.accessToken
+ACCESS_SECRET = k.accessSecret
 
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
