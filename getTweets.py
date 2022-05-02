@@ -4,6 +4,7 @@
 import tweepy, time, sys
 import keys as k
 
+# Import keys from keys.py
 API_KEY = k.apiKey
 API_SECRET = k.apiSecret
 ACCESS_TOKEN = k.accessToken
