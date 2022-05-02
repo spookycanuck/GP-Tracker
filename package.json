@@ -1,8 +1,9 @@
 {
-    "name": "example-app",
-    "description": "a really cool app",
+    "name": "f1scheduler",
+    "description": "schedules f1 races & posts to twitter",
     "version": "1.0.0",
     "engines": {
-      "node": "16.x"
+      "node": "14.x",
+      "npm": "6.x"
     }
   }
