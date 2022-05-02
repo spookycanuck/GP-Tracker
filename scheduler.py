@@ -23,4 +23,4 @@ for line in f:
     api.update_status(line)
     print('tweet number', f.index(line)+1, 'posted')
     sys.stdout.flush()
-    time.sleep(5)
+    time.sleep(15)
