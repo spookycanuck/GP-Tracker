@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# to run this code from the server, use command "heroku run worker" in terminal
+# to run this code from local, uncomment the keys and run this file
+#   along with the target file in python
+
+# TODO: figure out a way to craft Tweets from the CSV file.
+
 import tweepy, time, sys
 # import keys as k
 from os import environ
