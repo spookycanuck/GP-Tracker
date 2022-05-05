@@ -1,24 +1,22 @@
-#!/usr/bin/env python
-# coding: utf-8
+# How to use:
+#   1. to run this code from a heroku server:
+#       - use Heroku keys
+#       - use command "heroku run worker" in terminal
+#   2. to run this code from local, use local key variables
+#       - use Local keys
+#       - use command "py scheduler.py" in terminal
 
-# to run this code from the server, use command "heroku run worker" in terminal
-# to run this code from local, uncomment the keys and run this file
-#   along with the target file in python
-
-# TODO: figure out a way to craft Tweets from the CSV file.
-
+from os import environ
 import tweepy, time, sys, csv
 import keys as k
-from os import environ
 
-# argfile = str(sys.argv[1])
-
-# Import keys from Heroku 
+# Heroku Keys
 # API_KEY = environ['CONSUMER_KEY']
 # API_SECRET = environ['CONSUMER_SECRET']
 # ACCESS_TOKEN = environ['ACCESS_TOKEN']
 # ACCESS_SECRET = environ['ACCESS_SECRET']
 
+# Local Keys
 API_KEY = k.apiKey
 API_SECRET = k.apiSecret
 ACCESS_TOKEN = k.accessToken
@@ -27,10 +25,6 @@ ACCESS_SECRET = k.accessSecret
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
 api = tweepy.API(auth)
-
-# filename = open(argfile,'r')
-# f = filename.readlines()
-# filename.close()
 
 headers = []
 race_list = []
@@ -53,13 +47,6 @@ with open('files/schedule4.csv', mode='r') as csv_file:
                 }
                 race_list.append(race)
         
-# print(race_list[4])
-# print(race_list[4]['date'])
-
-# print("\nThe", race_list[4]['race'], "will be held on", race_list[4]['time'],
-#         "at", race_list[4]['location'],
-#         "\n\nIt can be viewed on", race_list[4]['watch'])
-
 i = 0
 sleepTime = 1
 
