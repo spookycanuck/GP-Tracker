@@ -7,6 +7,8 @@
 #       - use command "py scheduler.py" in terminal
 
 from os import environ
+from datetime import datetime, date
+from dateutil import parser
 import tweepy, time, sys, csv
 import keys as k
 
@@ -47,31 +49,106 @@ with open('files/schedule4.csv', mode='r') as csv_file:
                 }
                 race_list.append(race)
         
-i = 0
-sleepTime = 1
 
-for line in race_list:
-    if (race_list[i]['time'] != 'Race Completed'):
-        if race_list[i]['time'] != 'CANCELED':
-            if (race_list[i]['watch'] != 'No info available'):
+def schedule_tweeter():
+    i = 0
+    sleepTime = 1
+
+    for line in race_list:
+        if (race_list[i]['time'] != 'Race Completed'):
+            if race_list[i]['time'] != 'CANCELED':
+                if (race_list[i]['watch'] != 'No info available'):
+                        api.update_status("\nThe " + race_list[i]['race'] + " will be held on " + race_list[i]['time']
+                                + " [EST] - at The " + race_list[i]['location'] +
+                                "\n\nIt can be viewed on " + race_list[i]['watch'])
+                        print('tweet', i+1, 'posted')
+                        time.sleep(sleepTime)
+                else:
                     api.update_status("\nThe " + race_list[i]['race'] + " will be held on " + race_list[i]['time']
                             + " [EST] - at The " + race_list[i]['location'] +
-                            "\n\nIt can be viewed on " + race_list[i]['watch'])
-                    print('tweet', i+1, 'posted')
+                            "\n\nNo watch info available")
+                    print('tweet', i+1, 'posted - no watch info')
                     time.sleep(sleepTime)
             else:
-                api.update_status("\nThe " + race_list[i]['race'] + " will be held on " + race_list[i]['time']
-                        + " [EST] - at The " + race_list[i]['location'] +
-                        "\n\nNo watch info available")
-                print('tweet', i+1, 'posted - no watch info')
+                api.update_status("\nThe " + race_list[i]['race'] + " originally scheduled for " + race_list[i]['date'][:3] + ' ' + race_list[i]['date'][-2:]
+                        + " has been " + race_list[i]['time'])
+                print('tweet', i+1, 'posted - canceled')
                 time.sleep(sleepTime)
         else:
-            api.update_status("\nThe " + race_list[i]['race'] + " originally scheduled for " + race_list[i]['date'][:3] + ' ' + race_list[i]['date'][-2:]
-                    + " has been " + race_list[i]['time'])
-            print('tweet', i+1, 'posted - canceled')
-            time.sleep(sleepTime)
-    else:
-        print('race completed - no tweet posted')
-        time.sleep(1)
-    sys.stdout.flush()
-    i += 1
+            print('race completed - no tweet posted')
+            time.sleep(1)
+        sys.stdout.flush()
+        i += 1
+
+def reminder_tweeter():
+    i = 0
+    sleepTime = 1
+    # td_hr = 0  # test value to be calculated later
+
+    now = datetime.now()
+    raceTimeObj = parser.parse(race_list[4]['time'])
+    current_time = now.replace(microsecond=0)
+    time_diff = raceTimeObj - current_time
+    td_sec = time_diff.total_seconds()
+    td_hr = td_sec/(60 * 60)
+
+    for line in race_list[3]:
+        try:
+            if (race_list[i]['time'] != 'Race Completed'):
+                if race_list[i]['time'] != 'CANCELED':
+                    if (race_list[i]['watch'] != 'No info available'):
+                        if(12 < td_hr < 24):
+                            print("\nRACE DAY!\n The ", race_list[i]['race'], " is less than 24hrs away!\n Watch on  ",
+                                race_list[i]['watch'], " at ", race_list[i]['time'][-8:], " [EST]")
+                            print('24hrs - tweet', i+1, 'posted')
+                        elif (1 < td_hr < 12):
+                            print("\nREMINDER!\n The ", race_list[i]['race'], " is less than 12hrs away!\n Watch on  ",
+                                race_list[i]['watch'], " at ", race_list[i]['time'][-8:], " [EST]")
+                            print('12hrs - tweet', i+1, 'posted')
+                        elif (0 < td_hr <= 1):
+                            api.update_status("\nIt's almost time!\n The " + race_list[i]['race'] + " is less than an hour away!\n Watch on  " +
+                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
+                            print('1hr! - tweet', i+1, 'posted')
+                        elif (td_hr <= 0):
+                            api.update_status("\nLIGHTS OUT!\n The " + race_list[i]['race'] + " is underway!\n Watch on  " +
+                                race_list[i]['watch'])
+                            print('lights out! - tweet', i+1, 'posted')
+            sys.stdout.flush()
+            i += 1
+        except Exception as e:
+            print("*****\nException Error:\n*****")
+            print(e)
+            pass
+
+
+def check_date():
+    now = datetime.now()
+    futureRace = []
+    nextRace = []
+    # print(now)
+
+    i = 0
+    y = 0
+    for x in race_list:
+        if race_list[i]['time'][:6] == 'Race C' or race_list[i]['time'][:6] == 'CANCEL':
+            pass
+        else:
+            dateCalc = race_list[i]['time']
+            dateObj = parser.parse(dateCalc)
+            if now <= dateObj:
+                futureRace.append(str(dateObj))
+                if y == 0:
+                    nextRace.append(race_list[i])
+                    y += 1
+                else:
+                    pass
+            else:
+                pass
+        i += 1
+    
+    print(futureRace)
+    print(futureRace[0])
+    print(race_list[0])
+    print(nextRace)
+
+check_date()
