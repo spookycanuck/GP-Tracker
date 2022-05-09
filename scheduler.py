@@ -121,7 +121,7 @@ def reminder_tweeter():
             pass
 
 
-def check_date():
+def next_race():
     now = datetime.now()
     futureRace = []
     nextRace = []
@@ -146,9 +146,15 @@ def check_date():
                 pass
         i += 1
     
-    print(futureRace)
-    print(futureRace[0])
-    print(race_list[0])
-    print(nextRace)
+    try:
+        api.update_status("The next race is the " + nextRace[0]['race'] + ".\nRace time is scheduled for " + nextRace[0]['time'][-8:] + " EST on " +
+            nextRace[0]['time'][:6] + ".\nCheck back here for schedule & reminder updates!")
+        print("next race tweet posted")
+    except Exception as e:
+        print("\n*****\nException Error:\n*****")
+        print(e)
+        pass
 
-check_date()
+# schedule_tweeter() # Posts entire F1 schedule from CSV to Twitter
+# reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
+# next_race() # Determines the next race on the schedule. Posts update to Twitter.
