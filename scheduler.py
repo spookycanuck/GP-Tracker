@@ -85,34 +85,53 @@ def reminder_tweeter():
     sleepTime = 1
     # td_hr = 0  # test value to be calculated later
 
-    now = datetime.now()
-    raceTimeObj = parser.parse(race_list[4]['time'])
-    current_time = now.replace(microsecond=0)
-    time_diff = raceTimeObj - current_time
-    td_sec = time_diff.total_seconds()
-    td_hr = td_sec/(60 * 60)
+    # now = datetime.now()
+    # race = race_list[5]['time']
+    # raceTimeObj = parser.parse(race)
+    # current_time = now.replace(microsecond=0)
+    # time_diff = raceTimeObj - current_time
+    # td_sec = time_diff.total_seconds()
+    # td_hr = td_sec/(60 * 60)
 
-    for line in race_list[3]:
+    for line in race_list[:6]:
         try:
             if (race_list[i]['time'] != 'Race Completed'):
                 if race_list[i]['time'] != 'CANCELED':
+                    now = datetime.now()
+                    race = race_list[i]['time']
+                    raceTimeObj = parser.parse(race)
+                    current_time = now.replace(microsecond=0)
+                    time_diff = raceTimeObj - current_time
+                    td_sec = time_diff.total_seconds()
+                    td_hr = td_sec/(60 * 60)
                     if (race_list[i]['watch'] != 'No info available'):
-                        if(12 < td_hr < 24):
-                            print("\nRACE DAY!\n The ", race_list[i]['race'], " is less than 24hrs away!\n Watch on  ",
-                                race_list[i]['watch'], " at ", race_list[i]['time'][-8:], " [EST]")
+                        if(24 < td_hr < 96):
+                            api.update_status("\nIt's race week!!\nThe " + race_list[i]['race'] + " is this weekend!\n Watch on  " +
+                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST] on" + race_list[i]['time'][:6])
+                            print('96hrs - tweet', i+1, 'posted')                       
+                        elif(12 < td_hr < 24):
+                            api.update_status("\nRACE DAY!\n The " + race_list[i]['race'] + " is less than 24hrs away!\n Watch on  " +
+                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('24hrs - tweet', i+1, 'posted')
                         elif (1 < td_hr < 12):
-                            print("\nREMINDER!\n The ", race_list[i]['race'], " is less than 12hrs away!\n Watch on  ",
-                                race_list[i]['watch'], " at ", race_list[i]['time'][-8:], " [EST]")
+                            api.update_status("\nREMINDER!\n The " + race_list[i]['race'] + " is less than 12hrs away!\n Watch on  " +
+                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('12hrs - tweet', i+1, 'posted')
                         elif (0 < td_hr <= 1):
                             api.update_status("\nIt's almost time!\n The " + race_list[i]['race'] + " is less than an hour away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('1hr! - tweet', i+1, 'posted')
-                        elif (td_hr <= 0):
+                        elif (-1 < td_hr <= 0):
                             api.update_status("\nLIGHTS OUT!\n The " + race_list[i]['race'] + " is underway!\n Watch on  " +
                                 race_list[i]['watch'])
                             print('lights out! - tweet', i+1, 'posted')
+                        elif(96 < td_hr):
+                            print('\nGreater than 96 hours until', race_list[i]['race'], '- no tweet posted')
+                            print(i)
+                            print(td_hr)
+                            print(line, '\n')
+                        else:
+                            print('\n--- No condition matching for', race_list[i]['race'],'---')
             sys.stdout.flush()
             i += 1
         except Exception as e:
@@ -156,5 +175,5 @@ def next_race():
         pass
 
 # schedule_tweeter() # Posts entire F1 schedule from CSV to Twitter
-# reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
+reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
 # next_race() # Determines the next race on the schedule. Posts update to Twitter.
