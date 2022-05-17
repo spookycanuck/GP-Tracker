@@ -1,4 +1,4 @@
-python==3.10.2
+python
 flask
 tweepy
 APScheduler==3.0.0
