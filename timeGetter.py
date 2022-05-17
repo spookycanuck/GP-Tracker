@@ -46,11 +46,12 @@ with open('files/schedule4.csv', mode='r') as csv_file:
 # Matches time string
 # ========================
 now = datetime.now()
-print("\nRace time from CSV: ", race_list[4]['time'])
+race = race_list[5]['time']
+print("\nRace time from CSV: ", race)
 print("Current time:", now)
 
 # raceTimeObj = datetime.strptime(race_list[4]['time'],'%b %d - %I:%M %p')
-raceTimeObj = parser.parse(race_list[4]['time'])
+raceTimeObj = parser.parse(race)
 current_time = now.replace(microsecond=0)
 
 print('\n-----------------')
