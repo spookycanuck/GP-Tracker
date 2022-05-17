@@ -83,15 +83,6 @@ def schedule_tweeter():
 def reminder_tweeter():
     i = 0
     sleepTime = 1
-    # td_hr = 0  # test value to be calculated later
-
-    # now = datetime.now()
-    # race = race_list[5]['time']
-    # raceTimeObj = parser.parse(race)
-    # current_time = now.replace(microsecond=0)
-    # time_diff = raceTimeObj - current_time
-    # td_sec = time_diff.total_seconds()
-    # td_hr = td_sec/(60 * 60)
 
     for line in race_list[:6]:
         try:
