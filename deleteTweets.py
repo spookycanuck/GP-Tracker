@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-# https://pythonmarketer.com/2020/09/13/delete-all-your-tweets-with-tweepy-and-the-twitter-api/
-
 import tweepy, time, sys
 import keys as k
 
