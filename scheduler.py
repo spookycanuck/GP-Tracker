@@ -12,7 +12,7 @@ from dateutil import parser
 from apscheduler.schedulers.blocking import BlockingScheduler
 import tweepy, time, sys, csv
 import logging, logging.handlers, os
-import keys as k
+# import keys as k
 
 # Set up event logging
 handler = logging.handlers.WatchedFileHandler(
