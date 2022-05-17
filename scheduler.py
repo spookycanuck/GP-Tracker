@@ -9,8 +9,19 @@
 from os import environ
 from datetime import datetime, date
 from dateutil import parser
+from apscheduler.schedulers.blocking import BlockingScheduler
 import tweepy, time, sys, csv
+import logging, logging.handlers, os
 import keys as k
+
+# Set up event logging
+handler = logging.handlers.WatchedFileHandler(
+    os.environ.get("LOGFILE", "files/logs/scheduler.log"))
+formatter = logging.Formatter(logging.BASIC_FORMAT)
+handler.setFormatter(formatter)
+root = logging.getLogger()
+root.setLevel(os.environ.get("LOGLEVEL", "INFO"))
+root.addHandler(handler)
 
 # Heroku Keys
 # API_KEY = environ['CONSUMER_KEY']
@@ -80,6 +91,7 @@ def schedule_tweeter():
         sys.stdout.flush()
         i += 1
 
+
 def reminder_tweeter():
     i = 0
     sleepTime = 1
@@ -99,28 +111,34 @@ def reminder_tweeter():
                         if(24 < td_hr < 96):
                             api.update_status("\nIt's race week!!\nThe " + race_list[i]['race'] + " is this weekend!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST] on" + race_list[i]['time'][:6])
-                            print('96hrs - tweet', i+1, 'posted')                       
+                            print('96hrs - tweet', i+1, 'posted')  
+                            logging.info('REMINDER:: 96hrs - tweet ' + str(i+1) + ' posted')                     
                         elif(12 < td_hr < 24):
                             api.update_status("\nRACE DAY!\n The " + race_list[i]['race'] + " is less than 24hrs away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('24hrs - tweet', i+1, 'posted')
+                            logging.info('REMINDER:: 24hrs - tweet ' + str(i+1) + ' posted')
                         elif (1 < td_hr < 12):
                             api.update_status("\nREMINDER!\n The " + race_list[i]['race'] + " is less than 12hrs away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('12hrs - tweet', i+1, 'posted')
+                            logging.info('REMINDER:: 12hrs - tweet ' + str(i+1) + ' posted')
                         elif (0 < td_hr <= 1):
                             api.update_status("\nIt's almost time!\n The " + race_list[i]['race'] + " is less than an hour away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('1hr! - tweet', i+1, 'posted')
+                            logging.info('REMINDER:: 1hr! - tweet ' + str(i+1) + ' posted')
                         elif (-1 < td_hr <= 0):
                             api.update_status("\nLIGHTS OUT!\n The " + race_list[i]['race'] + " is underway!\n Watch on  " +
                                 race_list[i]['watch'])
                             print('lights out! - tweet', i+1, 'posted')
+                            logging.info('REMINDER:: lights out! - tweet ' + str(i+1) + ' posted')
                         elif(96 < td_hr):
                             print('\nGreater than 96 hours until', race_list[i]['race'], '- no tweet posted')
-                            print(i)
-                            print(td_hr)
-                            print(line, '\n')
+                            print(round(td_hr, 2), 'hrs left\n')
+                            logging.info('REMINDER::Greater than 96 hours until ' + race_list[i]['race'] + ' (' + str(round(td_hr, 2)) + 'hrs) - no tweet posted')
+                            # print(i)
+                            # print(line, '\n')
                         else:
                             print('\n--- No condition matching for', race_list[i]['race'],'---')
             sys.stdout.flush()
@@ -160,11 +178,28 @@ def next_race():
         api.update_status("The next race is the " + nextRace[0]['race'] + ".\nRace time is scheduled for " + nextRace[0]['time'][-8:] + " EST on " +
             nextRace[0]['time'][:6] + ".\nCheck back here for schedule & reminder updates!")
         print("next race tweet posted")
+        logging.info("NEXT_RACE:: next race tweet posted")
     except Exception as e:
         print("\n*****\nException Error:\n*****")
         print(e)
         pass
 
-# schedule_tweeter() # Posts entire F1 schedule from CSV to Twitter
-reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
-# next_race() # Determines the next race on the schedule. Posts update to Twitter.
+
+if __name__ == "__main__":
+    # schedule_tweeter() # Posts entire F1 schedule from CSV to Twitter
+    # next_race() # Determines the next race on the schedule. Posts update to Twitter.
+    # reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
+
+    scheduler = BlockingScheduler()
+    scheduler.add_job(reminder_tweeter, 'interval', hours=12, start_date='2022-05-18 09:00:00', end_date='2022-05-23 10:05:00')
+    scheduler.add_job(next_race, 'interval', days=7, start_date='2022-05-22 13:00:00', end_date='2022-05-23 10:00:00')
+    print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
+
+    try:
+        scheduler.start()
+        logging.info("reminder function successfully ran at " + str(datetime.now()))
+    except Exception as e:
+        print('ERROR: reminder_tweeter did not run.')
+        print(e)
+        logging.exception("\n==========\nException in main()\n" + str(e) + '\n----------\n')
+        exit(1)
