@@ -9,6 +9,7 @@
 from os import environ
 from datetime import datetime, date
 from dateutil import parser
+from collections.abc import Mapping
 from apscheduler.schedulers.blocking import BlockingScheduler
 import tweepy, time, sys, csv
 import logging, logging.handlers, os
@@ -108,17 +109,17 @@ def reminder_tweeter():
                     td_sec = time_diff.total_seconds()
                     td_hr = td_sec/(60 * 60)
                     if (race_list[i]['watch'] != 'No info available'):
-                        if(24 < td_hr < 96):
+                        if(24 < td_hr <= 96):
                             api.update_status("\nIt's race week!!\nThe " + race_list[i]['race'] + " is this weekend!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST] on" + race_list[i]['time'][:6])
                             print('96hrs - tweet', i+1, 'posted')  
                             logging.info('REMINDER:: 96hrs - tweet ' + str(i+1) + ' posted')                     
-                        elif(12 < td_hr < 24):
+                        elif(12 < td_hr <= 24):
                             api.update_status("\nRACE DAY!\n The " + race_list[i]['race'] + " is less than 24hrs away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('24hrs - tweet', i+1, 'posted')
                             logging.info('REMINDER:: 24hrs - tweet ' + str(i+1) + ' posted')
-                        elif (1 < td_hr < 12):
+                        elif (1 < td_hr <= 12):
                             api.update_status("\nREMINDER!\n The " + race_list[i]['race'] + " is less than 12hrs away!\n Watch on  " +
                                 race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST]")
                             print('12hrs - tweet', i+1, 'posted')
@@ -191,7 +192,7 @@ if __name__ == "__main__":
     # reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
 
     scheduler = BlockingScheduler()
-    scheduler.add_job(reminder_tweeter, 'interval', hours=12, start_date='2022-05-18 09:00:00', end_date='2022-05-23 10:05:00')
+    scheduler.add_job(reminder_tweeter, 'interval', hours=12, start_date='2022-05-19 09:00:00', end_date='2022-05-23 10:05:00')
     scheduler.add_job(next_race, 'interval', days=7, start_date='2022-05-22 13:00:00', end_date='2022-05-23 10:00:00')
     print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
