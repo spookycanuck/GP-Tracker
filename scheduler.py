@@ -13,7 +13,7 @@ from collections.abc import Mapping
 from apscheduler.schedulers.blocking import BlockingScheduler
 import tweepy, time, sys, csv
 import logging, logging.handlers, os
-# import keys as k
+import keys as k
 
 # Set up event logging
 handler = logging.handlers.WatchedFileHandler(
@@ -25,16 +25,16 @@ root.setLevel(os.environ.get("LOGLEVEL", "INFO"))
 root.addHandler(handler)
 
 # Heroku Keys
-API_KEY = environ['CONSUMER_KEY']
-API_SECRET = environ['CONSUMER_SECRET']
-ACCESS_TOKEN = environ['ACCESS_TOKEN']
-ACCESS_SECRET = environ['ACCESS_SECRET']
+# API_KEY = environ['CONSUMER_KEY']
+# API_SECRET = environ['CONSUMER_SECRET']
+# ACCESS_TOKEN = environ['ACCESS_TOKEN']
+# ACCESS_SECRET = environ['ACCESS_SECRET']
 
 # Local Keys
-# API_KEY = k.apiKey
-# API_SECRET = k.apiSecret
-# ACCESS_TOKEN = k.accessToken
-# ACCESS_SECRET = k.accessSecret
+API_KEY = k.apiKey
+API_SECRET = k.apiSecret
+ACCESS_TOKEN = k.accessToken
+ACCESS_SECRET = k.accessSecret
 
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
@@ -111,7 +111,7 @@ def reminder_tweeter():
                     if (race_list[i]['watch'] != 'No info available'):
                         if(24 < td_hr <= 96):
                             api.update_status("\nIt's race week!!\nThe " + race_list[i]['race'] + " is this weekend!\n Watch on  " +
-                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST] on" + race_list[i]['time'][:6])
+                                race_list[i]['watch'] + " at " + race_list[i]['time'][-8:] + " [EST] on " + race_list[i]['time'][:6])
                             print('96hrs - tweet', i+1, 'posted')  
                             logging.info('REMINDER:: 96hrs - tweet ' + str(i+1) + ' posted')                     
                         elif(12 < td_hr <= 24):
@@ -186,15 +186,15 @@ def next_race():
         pass
 
 
+scheduler = BlockingScheduler()
+scheduler.add_job(reminder_tweeter, 'interval', hours=12, start_date='2022-05-20 09:00:00', end_date='2022-05-23 10:05:00')
+scheduler.add_job(next_race, 'interval', days=7, start_date='2022-05-22 13:00:00', end_date='2022-05-23 10:00:00')
+
 if __name__ == "__main__":
     # schedule_tweeter() # Posts entire F1 schedule from CSV to Twitter
     # next_race() # Determines the next race on the schedule. Posts update to Twitter.
     # reminder_tweeter() # Posts reminders the week leading up to race day, based on time until race, to Twitter
-
-    scheduler = BlockingScheduler()
-    scheduler.add_job(reminder_tweeter, 'interval', hours=12, start_date='2022-05-19 09:00:00', end_date='2022-05-23 10:05:00')
-    scheduler.add_job(next_race, 'interval', days=7, start_date='2022-05-22 13:00:00', end_date='2022-05-23 10:00:00')
-    print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
+    # print('Press Ctrl+{0} to exit'.format('Break' if os.name == 'nt' else 'C'))
 
     try:
         scheduler.start()
