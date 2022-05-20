@@ -13,7 +13,7 @@ from collections.abc import Mapping
 from apscheduler.schedulers.blocking import BlockingScheduler
 import tweepy, time, sys, csv
 import logging, logging.handlers, os
-import keys as k
+# import keys as k
 
 # Set up event logging
 handler = logging.handlers.WatchedFileHandler(
@@ -25,16 +25,16 @@ root.setLevel(os.environ.get("LOGLEVEL", "INFO"))
 root.addHandler(handler)
 
 # Heroku Keys
-# API_KEY = environ['CONSUMER_KEY']
-# API_SECRET = environ['CONSUMER_SECRET']
-# ACCESS_TOKEN = environ['ACCESS_TOKEN']
-# ACCESS_SECRET = environ['ACCESS_SECRET']
+API_KEY = environ['CONSUMER_KEY']
+API_SECRET = environ['CONSUMER_SECRET']
+ACCESS_TOKEN = environ['ACCESS_TOKEN']
+ACCESS_SECRET = environ['ACCESS_SECRET']
 
 # Local Keys
-API_KEY = k.apiKey
-API_SECRET = k.apiSecret
-ACCESS_TOKEN = k.accessToken
-ACCESS_SECRET = k.accessSecret
+# API_KEY = k.apiKey
+# API_SECRET = k.apiSecret
+# ACCESS_TOKEN = k.accessToken
+# ACCESS_SECRET = k.accessSecret
 
 auth = tweepy.OAuthHandler(API_KEY, API_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
